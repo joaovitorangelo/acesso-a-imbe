@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso a Imbe</title>
+    <script src="jsQR.js"></script>
+</head>
+<body>
+    <main>
+        <img src="./qrimbe.png" id="qrcode-image" />
+    </main>
+
+    <script>
+        function decodeQRCode() {
+            // Obter o elemento de imagem do QR Code
+            const imgElement = document.getElementById('qrcode-image');
+
+            // Decodificar o QR Code usando a biblioteca jsQR
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = imgElement.width;
+            canvas.height = imgElement.height;
+            context.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            return code ? code.data : null;
+        }
+
+        // Verificar se o usuário já escaneou o QR Code
+        let user_cpf = localStorage.getItem("user_cpf");
+
+        if (!user_cpf) {
+            // Se não escaneou, mostrar o formulário para identificação
+            alert("Por favor, escaneie o QR Code para prosseguir.");
+
+            // Decodificar o QR Code
+            const scannedData = decodeQRCode();
+
+            if (scannedData) {
+                // Salvar o CPF na memória do navegador
+                localStorage.setItem("user_cpf", scannedData);
+                alert("Bem-vindo! CPF registrado: " + scannedData);
+            } else {
+                alert("QR Code não detectado. Por favor, tente novamente.");
+            }
+        } else {
+            // Se já escaneou, mostrar a mensagem de boas-vindas
+            alert("Bem-vindo de volta! CPF registrado: " + user_cpf);
+        }
+    </script>
+</body>
+</html>
